@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Padding(
                       padding: EdgeInsets.all(1.0),
-                      child: isloading ? circularProgres() : Container,
+                      child: isloading ? circularProgres() : Text(''),
                     )
                   ],
                 ),
@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
           'nickname': firebaseUser.displayName,
           'photoUrl': firebaseUser.photoUrl,
           'aboutMe': 'Available',
-          'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+          'createdAt': DateTime.now().toString(),
           'cahttingWSith': null,
         });
         //after set fireStore we will set data locale
