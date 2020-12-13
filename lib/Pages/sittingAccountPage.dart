@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatix/Widgets/progressWidget.dart';
 import 'package:chatix/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -138,8 +141,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
                     child: isloading ? circularProgres : Text(''),
                   ),
                   Container(
-                      margin:
-                          EdgeInsets.only(left: 10.0, right: 10.0),
+                      margin: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: Text(
                         'Profile Name :',
                         style: TextStyle(
@@ -203,7 +205,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
               // Buttons
               Container(
                 child: FlatButton(
-                  onPressed: ()=>null,
+                  onPressed: updateData,
                   child: Text(
                     'Update',
                     style: TextStyle(fontSize: 16.0),
@@ -229,7 +231,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
                   textColor: Colors.white,
                   padding: EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 10.0),
                 ),
-                margin: EdgeInsets.only( bottom: 10.0),
+                margin: EdgeInsets.only(bottom: 10.0),
               ),
             ],
           ),
@@ -262,6 +264,7 @@ class _SittingsScreenState extends State<SittingsScreen> {
         isloading = true;
       });
     }
+    uploadImageToFirebaseAndStorage();
   }
 
   // this method for sign out
@@ -275,6 +278,75 @@ class _SittingsScreenState extends State<SittingsScreen> {
         (Route<dynamic> route) => false);
     this.setState(() {
       isloading = false;
+    });
+  }
+
+// this method for updata Image user and upload to fireStoreAnd Storage came from = (getImage)
+  Future uploadImageToFirebaseAndStorage() async {
+    // 1_id for each user when want to update
+    String mFileName = id;
+    // 2_ Start upload tp Storage
+    StorageReference storageReference =
+        FirebaseStorage.instance.ref().child(mFileName);
+    StorageUploadTask storageUploadTask =
+        storageReference.putFile(imageFileAvatar);
+    StorageTaskSnapshot storageTaskSnapshot;
+    storageUploadTask.onComplete.then((value) {
+      if (value == null) {
+        storageTaskSnapshot = value;
+        storageTaskSnapshot.ref.getDownloadURL().then((newImageDownloadUr) {
+          photoUrl = newImageDownloadUr;
+          // 3_ here after update to storage we will update to fireStore
+          Firestore.instance.collection('users').document(id).updateData({
+            'photoUrl': photoUrl,
+            'nickname': nickname,
+            'aboutMe': aboutMe,
+            // 4_ after that will update to locale to shaerdprefrenc
+          }).then((value) async {
+            await preferences.setString('photoUrl', photoUrl);
+            setState(() {
+              isloading = false;
+            });
+            Fluttertoast.showToast(msg: 'Update don');
+          });
+        }, onError: (err) {
+          setState(() {
+            isloading = false;
+          });
+          Fluttertoast.showToast(msg: 'Error update try again');
+        });
+      }
+    }, onError: (erroremsg) {
+      setState(() {
+        isloading = false;
+      });
+      Fluttertoast.showToast(
+        msg: erroremsg.toString(),
+      );
+    });
+  }
+
+// this method for updateDat nickname+aboutme to fireStore
+  void updateData() {
+    nickNameFocusNode.unfocus();
+    aboutMeFocusNode.unfocus();
+    setState(() {
+      isloading = false;
+    });
+
+    Firestore.instance.collection('users').document(id).updateData({
+      'photoUrl': photoUrl,
+      'nickname': nickname,
+      'aboutMe': aboutMe,
+      // 4_ after that will update to locale to shaerdprefrenc
+    }).then((value) async {
+      await preferences.setString('photoUrl', photoUrl);
+      await preferences.setString('nickname', nickname);
+      await preferences.setString('aboutMe', aboutMe);
+      setState(() {
+        isloading = false;
+      });
+      Fluttertoast.showToast(msg: 'Update don');
     });
   }
 }
