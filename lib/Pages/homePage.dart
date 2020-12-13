@@ -1,8 +1,5 @@
 import 'package:chatix/Pages/sittingAccountPage.dart';
-import 'package:chatix/main.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
   // this item came from argment = this method = void isSignIned();
@@ -18,24 +15,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: homePageHeader(),
-      body: RaisedButton.icon(
-        onPressed: logOutUser,
-        icon: Icon(Icons.close),
-        label: Text('SignOut'),
-      ),
+      // body: RaisedButton.icon(
+      //   onPressed: logOutUser,
+      //   icon: Icon(Icons.close),
+      //   label: Text('SignOut'),
+      // ),
     );
   }
 
-// this method for sign out
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  Future<Null> logOutUser() async {
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => MyApp()),
-        (Route<dynamic> route) => false);
-  }
+
 
   // this function for appBar Widget
   homePageHeader() {
@@ -50,7 +38,7 @@ class _HomePageState extends State<HomePage> {
           ),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return Sitting();
+              return Settings();
             }));
           },
         )
