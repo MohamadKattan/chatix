@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: EdgeInsets.all(1.0),
                       child: isloading ? circularProgres() : Text(''),
-                    )
+                    ),
                   ],
                 ),
               ),
