@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatix/Models/user.dart';
+import 'package:chatix/Pages/chatPage.dart';
 import 'package:chatix/Pages/sittingAccountPage.dart';
 import 'package:chatix/Widgets/progressWidget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -159,12 +160,13 @@ class UserResult extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(4.0),
-      child: GestureDetector(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              ListTile(
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: () => sendUserToChatPage(context),
+              child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.teal[600],
                   backgroundImage: CachedNetworkImageProvider(
@@ -179,20 +181,29 @@ class UserResult extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  'joined:'+
-                      DateFormat('dd MMMM, yyyy - hh:mm:aa').format(
-                          DateTime.parse(
-                              (eachUser.createdAt))),
+                  'joined:' +
+                      DateFormat('dd MMMM, yyyy - hh:mm:aa')
+                          .format(DateTime.parse((eachUser.createdAt))),
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14.0,
                       fontStyle: FontStyle.italic),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  // this method for click on userSearchResult for going to chatPage with argment
+  sendUserToChatPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return Chat(
+          receiverId: eachUser.id,
+          receiverAveter: eachUser.photoUrl,
+          receiverName: eachUser.nickname);
+    }));
   }
 }
