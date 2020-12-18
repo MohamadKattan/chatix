@@ -65,7 +65,7 @@ flutter:
     -  images/bear1.jpg
     - images/bear2.png
     -  images/bear3.png
-
+    -  images/errore.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
