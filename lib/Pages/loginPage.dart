@@ -91,75 +91,83 @@ class _LoginPageState extends State<LoginPage> {
 // this metod for sigIn in google and Auth with firebase
   Future<Null> controalSiginIn() async {
     //for locale data
-    preferences = await SharedPreferences.getInstance();
-    //for turn circularProgres when click to register
-    this.setState(() {
-      isloading = true;
-    });
-    //Starting
-    GoogleSignInAccount googleUser = await googleSignIn.signIn();
-    GoogleSignInAuthentication googleAuthentication =
-        await googleUser.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-        idToken: googleAuthentication.idToken,
-        accessToken: googleAuthentication.accessToken);
-
-    FirebaseUser firebaseUser =
-        (await firebaseAuth.signInWithCredential(credential)).user;
-    //signIn success
-    if (firebaseUser != null) {
-      final QuerySnapshot resultQuery = await Firestore.instance
-          .collection('users')
-          .where('id', isEqualTo: firebaseUser.uid)
-          .getDocuments();
-      final List<DocumentSnapshot> documentSnapshot = resultQuery.documents;
-      //if user new and he  is nor register before =save his data on firebaseSotre
-      if (documentSnapshot.length == 0) {
-        Firestore.instance
-            .collection('users')
-            .document(firebaseUser.uid)
-            .setData({
-          'id': firebaseUser.uid,
-          'nickname': firebaseUser.displayName,
-          'photoUrl': firebaseUser.photoUrl,
-          'aboutMe': 'Available',
-          'createdAt': DateTime.now().toString(),
-          'cahttingWSith': null,
-        });
-        //after set fireStore we will set data locale
-        currentUser = firebaseUser;
-        await preferences.setString('id', currentUser.uid);
-        await preferences.setString('nickname', currentUser.displayName);
-        await preferences.setString('photoUrl', currentUser.photoUrl);
-      }
-      // if user old and register before no need save data again just write = push to homePage
-      else {
-        currentUser = firebaseUser;
-        await preferences.setString('id', documentSnapshot[0]['id']);
-        await preferences.setString(
-            'nickname', documentSnapshot[0]['nickname']);
-        await preferences.setString(
-            'photoUrl', documentSnapshot[0]['photoUrl']);
-        await preferences.setString('aboutMe', documentSnapshot[0]['aboutMe']);
-      }
-      Fluttertoast.showToast(msg: 'SignIN Success');
+    try {
+      preferences = await SharedPreferences.getInstance();
+      //for turn circularProgres when click to register
       this.setState(() {
-        isloading = false;
+        isloading = true;
       });
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                    currentUserId: firebaseUser.uid,
-                  )));
-    }
-    //signin Not success=failed
-    else {
+      //Starting
+      GoogleSignInAccount googleUser = await googleSignIn.signIn();
+      GoogleSignInAuthentication googleAuthentication =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: googleAuthentication.idToken,
+          accessToken: googleAuthentication.accessToken);
+
+      FirebaseUser firebaseUser =
+          (await firebaseAuth.signInWithCredential(credential)).user;
+      //signIn success
+      if (firebaseUser != null) {
+        final QuerySnapshot resultQuery = await Firestore.instance
+            .collection('users')
+            .where('id', isEqualTo: firebaseUser.uid)
+            .getDocuments();
+        final List<DocumentSnapshot> documentSnapshot = resultQuery.documents;
+        //if user new and he  is nor register before =save his data on firebaseSotre
+        if (documentSnapshot.length == 0) {
+          Firestore.instance
+              .collection('users')
+              .document(firebaseUser.uid)
+              .setData({
+            'id': firebaseUser.uid,
+            'nickname': firebaseUser.displayName,
+            'photoUrl': firebaseUser.photoUrl,
+            'aboutMe': 'Available',
+            'createdAt': DateTime.now().toString(),
+            'cahttingWSith': null,
+          });
+          //after set fireStore we will set data locale
+          currentUser = firebaseUser;
+          await preferences.setString('id', currentUser.uid);
+          await preferences.setString('nickname', currentUser.displayName);
+          await preferences.setString('photoUrl', currentUser.photoUrl);
+        }
+        // if user old and register before no need save data again just write = push to homePage
+        else {
+          currentUser = firebaseUser;
+          await preferences.setString('id', documentSnapshot[0]['id']);
+          await preferences.setString(
+              'nickname', documentSnapshot[0]['nickname']);
+          await preferences.setString(
+              'photoUrl', documentSnapshot[0]['photoUrl']);
+          await preferences.setString(
+              'aboutMe', documentSnapshot[0]['aboutMe']);
+        }
+        Fluttertoast.showToast(msg: 'SignIN Success');
+        this.setState(() {
+          isloading = false;
+        });
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(
+                      currentUserId: firebaseUser.uid,
+                    )));
+      }
+      //signin Not success=failed
+      else {
+        Fluttertoast.showToast(msg: 'Try again,SignIN failed');
+        this.setState(() {
+          isloading = false;
+        });
+      }
+    } catch (ex) {
       Fluttertoast.showToast(msg: 'Try again,SignIN failed');
       this.setState(() {
         isloading = false;
-       });
+      });
     }
   }
 

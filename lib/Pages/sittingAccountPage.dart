@@ -319,8 +319,8 @@ class _SittingsScreenState extends State<SittingsScreen> {
       });
     } catch (e) {
       setState(() {
-            isloading = false;
-          });
+        isloading = false;
+      });
       Fluttertoast.showToast(msg: 'Error update try again');
     }
 

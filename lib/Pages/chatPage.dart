@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // this class for custom appBar for show photo + name user who will start chating
@@ -285,7 +286,7 @@ class ChatScreenState extends State<ChatScreen> {
               FlatButton(
                   onPressed: () => onSendMessage('bear1', 2),
                   child: Image.asset(
-                    'images/bear1.jpg',
+                    'images/bear2.png',
                     height: 50.0,
                     width: 50.0,
                     fit: BoxFit.cover,
@@ -314,7 +315,7 @@ class ChatScreenState extends State<ChatScreen> {
               FlatButton(
                   onPressed: () => onSendMessage('bear1', 2),
                   child: Image.asset(
-                    'images/bear1.jpg',
+                    'images/bear2.png',
                     height: 50.0,
                     width: 50.0,
                     fit: BoxFit.cover,
@@ -343,7 +344,7 @@ class ChatScreenState extends State<ChatScreen> {
               FlatButton(
                   onPressed: () => onSendMessage('bear1', 2),
                   child: Image.asset(
-                    'images/bear1.jpg',
+                    'images/bear2.png',
                     height: 50.0,
                     width: 50.0,
                     fit: BoxFit.cover,
@@ -578,11 +579,150 @@ class ChatScreenState extends State<ChatScreen> {
       );
     }
     //2_ricevre message left side
-    else {}
+    else {
+      return Container(
+        margin: EdgeInsets.only(bottom: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                // 1_ for show profileImage who ricevre my messages
+                isListMsgLeft(index)
+                    ? Material(
+                        child: CachedNetworkImage(
+                          placeholder: (context, url) =>
+                              // //this matrial for show circullerProgsses
+                              Container(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.teal[600]),
+                            ),
+                            width: 35.0,
+                            height: 35.0,
+                            padding: EdgeInsets.all(10.0),
+                          ),
+                          imageUrl: receiverAveter,
+                          height: 35.0,
+                          width: 35.0,
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        clipBehavior: Clip.hardEdge,
+                      )
+                    : Container(
+                        width: 35.0,
+                      ),
+                // 2_ display data from firebase messages+image+sticker
+
+                document['type'] == 0
+                    // Text= typ0
+                    ? Container(
+                        child: Text(
+                          document['content'],
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w400),
+                        ),
+                        padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                        width: 200.0,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0))),
+                        margin: EdgeInsets.only(left: 10.0),
+                      )
+                    : document['type'] == 1
+                        //image = type1
+                        ? Container(
+                            // this flat for puch image to fullimage page
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return FullPhoto(
+                                    url: document['content'],
+                                  );
+                                }));
+                              },
+                              child: Material(
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) =>
+                                      // //this matrial for show circullerProgsses
+                                      Container(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.teal[600]),
+                                    ),
+                                    width: 200.0,
+                                    height: 200.0,
+                                    padding: EdgeInsets.all(70.0),
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0))),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      // for error image
+                                      Material(
+                                    child: Image.asset(
+                                      'images/errore.png',
+                                      height: 200.0,
+                                      width: 200.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                    clipBehavior: Clip.hardEdge,
+                                  ),
+                                  // Image came from firebase
+                                  imageUrl: document['content'],
+                                  width: 200.0,
+                                  height: 200.0,
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                              ),
+                            ),
+                            margin: EdgeInsets.only(left: 10.0),
+                          ) // steckers=type2
+                        : Container(
+                            child: Image.asset(
+                              'images/${document['content']}.png',
+                              width: 100.0,
+                              height: 100.0,
+                              fit: BoxFit.cover,
+                            ),
+                            margin: EdgeInsets.only(left: 10.0),
+                          ),
+              ],
+            ),
+            //3_ here will display message time
+            isListMsgLeft(index)
+                ? Container(
+                    child: Text(
+                      DateFormat('dd MMMM ,yyyy -hh:mm:aa ')
+                          .format(DateTime.parse(document['timestamp'])),
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                          fontStyle: FontStyle.italic),
+                    ),
+                    margin: EdgeInsets.only(left: 50.0, top: 50.0, bottom: 5.0),
+                  )
+                : Container(),
+          ],
+        ),
+      );
+    }
   }
 
   //  for show  my data messages in right side
-  isListMsgRight(int index) {
+  bool isListMsgRight(int index) {
     if ((index > 0 &&
             listMessages != null &&
             listMessages[index - 1]['idFROM'] == id) ||
@@ -593,10 +733,10 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  isListMsgLeft(int index) {
+  bool isListMsgLeft(int index) {
     if ((index > 0 &&
-        listMessages != null &&
-        listMessages[index - 1]['idFROM'] != id) ||
+            listMessages != null &&
+            listMessages[index - 1]['idFROM'] != id) ||
         index == 0) {
       return true;
     } else {
