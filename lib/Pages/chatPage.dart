@@ -60,7 +60,9 @@ class Chat extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: () => print('2'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                         icon: Icon(
                           Icons.arrow_back,
                           color: Colors.white,
@@ -81,13 +83,29 @@ class Chat extends StatelessWidget {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 15),
-                  child: IconButton(
-                      icon: Icon(
-                    Icons.list,
-                    color: Colors.white,
-                  )),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 15.0),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.videocam,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 15),
+                      child: IconButton(
+                          icon: Icon(
+                        Icons.list,
+                        color: Colors.white,
+                      )),
+                    ),
+                  ],
                 ),
               ],
             ),

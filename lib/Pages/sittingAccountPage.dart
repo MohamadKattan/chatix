@@ -12,23 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// class Settings extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         iconTheme: IconThemeData(color: Colors.white),
-//         backgroundColor: Colors.teal[600],
-//         centerTitle: true,
-//         title: Text(
-//           'Settings',
-//           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//       body: SittingsScreen(),
-//     );
-//   }
-// }
+
 
 class SittingsScreen extends StatefulWidget {
   @override
